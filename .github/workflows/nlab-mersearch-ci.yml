@@ -1,0 +1,66 @@
+name: Standalone nLab Mersearch acceptance
+
+on:
+  push:
+    branches:
+      - mersearch-standalone-nlab-20261009
+    paths:
+      - 'tools/mersearch*.py'
+      - 'tools/tests/**'
+      - 'tools/requirements-mersearch.txt'
+      - 'tools/MERSEARCH_README.md'
+      - '.github/workflows/nlab-mersearch-ci.yml'
+  pull_request:
+    paths:
+      - 'tools/mersearch*.py'
+      - 'tools/tests/**'
+      - 'tools/requirements-mersearch.txt'
+      - '.github/workflows/nlab-mersearch-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout nlab only
+        uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install optional mathematical dependencies
+        run: python -m pip install -r tools/requirements-mersearch.txt
+      - name: Compile vendored standalone CLI and helpers
+        run: |
+          python -m py_compile \
+            tools/mersearch.py \
+            tools/mersearch_core.py \
+            tools/mersearch_json_sniff.py \
+            tools/mersearch_math.py \
+            tools/mersearch_math_genealogy.py
+      - name: Test all local query, math, isolation, and output contracts
+        run: python -m unittest discover -s tools/tests -p 'test_mersearch.py' -v
+      - name: Search actual nLab source without network or shared archives
+        run: |
+          python tools/mersearch.py --capabilities > /tmp/nlab-capabilities.json
+          python tools/mersearch.py --coverage --scope script/src > /tmp/nlab-scope-coverage.json
+          python tools/mersearch.py --expr '"nLab software"' --scope README.md --out .mersearch/ci-smoke
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          caps=json.loads(Path('/tmp/nlab-capabilities.json').read_text())
+          result=json.loads(Path('.mersearch/ci-smoke/SEARCH_RESULTS.json').read_text())
+          cov=json.loads(Path('/tmp/nlab-scope-coverage.json').read_text())
+          assert caps['single_repository_only'] and not caps['network_access']
+          assert not caps['database_access'] and not caps['wiki_pages_included']
+          assert caps['repository']=='Satobloc/nlab'
+          assert result['repository']=='Satobloc/nlab'
+          assert result['coverage']['total_results_before_limit'] >= 1
+          assert all(h['repository']=='Satobloc/nlab' for h in result['hits'])
+          assert cov['coverage']['files_scanned'] >= 10
+          print("nLab-only source smoke: PASS")
+          PY
+      - name: No unintended source edits
+        run: git diff --exit-code

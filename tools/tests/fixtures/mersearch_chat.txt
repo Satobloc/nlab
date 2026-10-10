@@ -1,0 +1,37 @@
+{
+  "title": "Local nLab fixture",
+  "id": "fixture-1",
+  "current_node": "m2",
+  "mapping": {
+    "m1": {
+      "parent": null,
+      "message": {
+        "id": "m1",
+        "create_time": 1750000000,
+        "author": {
+          "role": "user"
+        },
+        "content": {
+          "parts": [
+            "functor category x functor"
+          ]
+        }
+      }
+    },
+    "m2": {
+      "parent": "m1",
+      "message": {
+        "id": "m2",
+        "create_time": 1750000060,
+        "author": {
+          "role": "assistant"
+        },
+        "content": {
+          "parts": [
+            "revision tracking for functor category"
+          ]
+        }
+      }
+    }
+  }
+}

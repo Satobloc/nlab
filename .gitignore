@@ -26,3 +26,6 @@ __pycache__
 
 # Default location of unicorn configuration file.
 /config/unicorn.conf.rb
+
+# Standalone nLab Mersearch output. Never commit local search results.
+/.mersearch/

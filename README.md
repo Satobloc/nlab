@@ -9,6 +9,16 @@ Installation
 
 We have reverse-engineered [installation instructions](INSTALL.md).
 
+Standalone repository search
+============================
+
+This fork includes [nLab Mersearch](tools/MERSEARCH_README.md), an optional
+standalone command-line search engine for **this checked-out repository only**.
+Run `python3 tools/mersearch.py --capabilities` to discover its query language,
+or `python3 tools/mersearch.py --examples` for commands. It does not connect
+to nLab's live wiki database or any other repository, and does not change
+the running wiki application's search feature.
+
 Joining in
 ==========
 

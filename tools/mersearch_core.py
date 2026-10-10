@@ -1,6 +1,6 @@
 """nLab Mersearch local query parser and record readers (vendored standalone).
 
-No network APIs, shared repository discovery, or HsH data/index requirements.
+No network APIs, shared repository discovery, or foreign data/index requirements.
 The code was adapted from the standalone Mercer Searcher 1.x query grammar.
 """
 from __future__ import annotations
@@ -32,7 +32,7 @@ STATUS_PATTERNS=[
  ("unresolved",re.compile(r"\b(unresolved|open question|not sure|unknown|pending|needs? (?:checking|review)|tbd)\b",re.I)),
  ("derivation",re.compile(r"\b(derive|derived|derivation|therefore|implies?|follows? from)\b",re.I)),
  ("proposal",re.compile(r"\b(propose|proposal|hypothesis|maybe|perhaps|could be|let's try|we should try)\b",re.I))]
-TOKENIZER=re.compile(r'[A-Za-z_][\w-]*:"(?:\\.|[^"\\])*"|\\"(?:\\\\.|[^\\"\\\\])*\\"|\(|\)|\b(?:AND|OR|NOT)\b|\bNEAR(?:/\d+)?\b|[^\s()]+',re.I)
+TOKENIZER=re.compile(r'[A-Za-z_][\w-]*:"(?:\\.|[^"\\])*"|"(?:\\.|[^"\\])*"|\(|\)|\b(?:AND|OR|NOT)\b|\bNEAR(?:/\d+)?\b|[^\s()]+',re.I)
 PRECEDENCE={"OR":1,"AND":2,"NEAR":3,"NOT":4}
 
 
@@ -190,7 +190,7 @@ def field_eval(rec:Record,term:str)->Eval|None:
  if field=="has":
   flags={"conversation-source":rec.kind=="conversation-message","pdf-source":rec.kind=="pdf-page",
          "text-source":rec.kind in ("text-line","json-scalar","conversation-message"),
-         "message-id":bool(rec.message_id),"conversation-id":bool(rec.conversation_id),"viewer":bool(rec.viewer_url)}
+         "message-id":bool(rec.message_id),"conversation-id":bool(rec.conversation_id),"viewer":False}
   ok=flags.get(val,False)
   return Eval(ok,[],[term] if ok else [],[f"FIELD has:{val} => {ok}"],[])
  fmap={"author":rec.speaker or rec.role,"speaker":rec.speaker,"role":rec.role,"title":rec.title,

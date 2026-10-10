@@ -9,12 +9,14 @@ on:
       - 'tools/tests/**'
       - 'tools/requirements-mersearch.txt'
       - 'tools/MERSEARCH_README.md'
+      - 'README.md'
       - '.github/workflows/nlab-mersearch-ci.yml'
   pull_request:
     paths:
       - 'tools/mersearch*.py'
       - 'tools/tests/**'
       - 'tools/requirements-mersearch.txt'
+      - 'README.md'
       - '.github/workflows/nlab-mersearch-ci.yml'
 
 permissions:

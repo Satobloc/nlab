@@ -79,6 +79,10 @@ class SingleRepositorySafety(unittest.TestCase):
 
 
 class SearchAndFormats(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        (ROOT/".mersearch").mkdir(exist_ok=True)
+
     def run_query(self,*query_args):
         with tempfile.TemporaryDirectory(dir=ROOT/".mersearch") as directory:
             out=Path(directory).relative_to(ROOT).as_posix()

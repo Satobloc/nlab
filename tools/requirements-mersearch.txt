@@ -1,0 +1,3 @@
+# Optional, nlab-local mathematical search and extractable PDF support.
+sympy>=1.12,<2
+pypdf>=4,<7
